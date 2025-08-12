@@ -1,13 +1,22 @@
 from django.contrib import admin
 from django.urls import path, include
-from core.views import StockViewSet
+from core.views import StockViewSet, WalletConfigViewSet
 from rest_framework import routers
 
 
 router = routers.DefaultRouter()
 router.register(r'stocks', StockViewSet)
+# router.register(
+#     r'wallet-config', WalletConfigViewSet, basename='wallet-config'
+#     )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('wallet-config/list/',
+         WalletConfigViewSet.as_view({'get': 'list'})),
+    path('wallet-config/get-date/<int:pk>/',
+         WalletConfigViewSet.as_view({'get': 'get_date'})),
+    # path('wallet-config/update-date/<int:pk>/',
+    #      WalletConfigViewSet.as_view({'put': 'update_date'})),
 ]

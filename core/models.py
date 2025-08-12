@@ -9,3 +9,10 @@ class Stock(models.Model):
 
     def __str__(self):
         return f"{self.sticker} - {self.company_name}"
+
+
+class WalletConfig(models.Model):
+    stock_date = models.DateField()
+
+    def __str__(self):
+        return f"WalletConfig for {self.stock_date}"

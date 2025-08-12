@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Stock
+from .models import Stock, WalletConfig
 
 
 class StockSerializer(serializers.ModelSerializer):
@@ -12,3 +12,10 @@ class StockSerializer(serializers.ModelSerializer):
         if not value.isalnum():
             raise serializers.ValidationError("Sticker must be alphanumeric.")
         return value.upper()
+
+
+class WalletConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WalletConfig
+        fields = ['id', 'stock_date']
+        read_only_fields = ['id']
