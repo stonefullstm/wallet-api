@@ -2,6 +2,8 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
+
+from services.stocks import get_b3_stock_codes
 from .models import Stock, WalletConfig
 from .serializers import StockSerializer, WalletConfigSerializer
 from datetime import date
@@ -14,7 +16,17 @@ class StockViewSet(APIView):
         config = WalletConfig.objects.first()
         if config:
             if config.stock_date != date.today():
-                return Response({'error': 'Database outdated'}, status=404)
+                stock_data = get_b3_stock_codes()
+                for stock in stock_data:
+                    Stock.objects.update_or_create(
+                        sticker=stock['codigo'],
+                        defaults={
+                            'company_name': stock['nome'],
+                            'company_full_name': stock['razao_social']
+                        }
+                    )
+                config.stock_date = date.today()
+                config.save()
             # print(date.today().strftime('%Y/%m/%d'))
             return Response({
                 'stock_date': config.stock_date,
