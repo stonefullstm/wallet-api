@@ -12,6 +12,7 @@ class Stock(models.Model):
 
 
 class WalletConfig(models.Model):
+    id = models.PositiveSmallIntegerField(primary_key=True, default=1)
     stock_date = models.DateField()
 
     def __str__(self):

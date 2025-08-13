@@ -13,7 +13,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WalletConfig',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(
+                    auto_created=True, primary_key=True,
+                    serialize=False, verbose_name='ID')),
                 ('stock_date', models.DateField()),
             ],
         ),

@@ -14,7 +14,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Stock',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(
+                    auto_created=True, primary_key=True,
+                    serialize=False, verbose_name='ID')),
                 ('sticker', models.CharField(max_length=6, unique=True)),
                 ('company_name', models.CharField(max_length=100)),
                 ('company_full_name', models.CharField(max_length=100)),
