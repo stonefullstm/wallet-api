@@ -19,10 +19,10 @@ class StockViewSet(APIView):
                 stock_data = get_b3_stock_codes()
                 for stock in stock_data:
                     Stock.objects.update_or_create(
-                        sticker=stock['codigo'],
+                        sticker=stock['sticker'],
                         defaults={
-                            'company_name': stock['nome'],
-                            'company_full_name': stock['razao_social']
+                            'company_name': stock['company_name'],
+                            'company_full_name': stock['company_full_name']
                         }
                     )
                 config.stock_date = date.today()
