@@ -4,7 +4,7 @@ import chardet
 
 
 def get_b3_stock_codes():
-    url = "https://www.fundamentus.com.br/detalhes.php"
+    url = 'https://www.fundamentus.com.br/detalhes.php'
     headers = {
         'User-Agent': (
            'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
@@ -20,7 +20,8 @@ def get_b3_stock_codes():
 
     if response.status_code != 200:
         raise Exception(
-            f"Falha ao acessar {url}. Código de status: {response.status_code}"
+            ('Error retrieving table. '
+              f'Status code: {response.status_code}')
             )
 
     soup = BeautifulSoup(response.text, 'lxml')  # Usar lxml como parser
@@ -28,24 +29,18 @@ def get_b3_stock_codes():
     table = soup.find('table', {'id': 'test1', 'class': 'resultado'})
 
     if table is None:
-        raise Exception(("Tabela com os códigos de ações"
-                         " não encontrada na página."))
+        raise Exception('Stickers table not found.')
 
-    stock_codes = []
-
-    for row in table.find_all('tr')[1:]:  # Pula a primeira linha do cabeçalho
-        cells = row.find_all('td')
-        if len(cells) >= 3:
-            sticker = cells[0].text.strip()
-            company_name = cells[1].text.strip()
-            company_full_name = cells[2].text.strip()
-
-            if sticker and company_name and company_full_name:
-                stock_data = {
-                    'codigo': sticker,
-                    'nome': company_name,
-                    'razao_social': company_full_name
-                }
-                stock_codes.append(stock_data)
+    stock_codes = [
+        {
+            'sticker': cells[0].text.strip(),
+            'company_name': cells[1].text.strip(),
+            'company_full_name': cells[2].text.strip()
+        }
+        for row in table.find_all('tr')[1:]
+        if (cells := row.find_all('td')) and len(cells) >= 3
+        and cells[0].text.strip() and cells[1].text.strip()
+        and cells[2].text.strip()
+    ]
 
     return stock_codes
