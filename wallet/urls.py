@@ -17,6 +17,4 @@ urlpatterns = [
          WalletConfigViewSet.as_view({'get': 'list'})),
     path('wallet-config/get-date/<int:pk>/',
          WalletConfigViewSet.as_view({'get': 'get_date'})),
-    # path('wallet-config/update-date/<int:pk>/',
-    #      WalletConfigViewSet.as_view({'put': 'update_date'})),
 ]
