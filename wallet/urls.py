@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from core.views import StockViewSet, WalletConfigViewSet
+from user.views import UserCreateAPIView
 from rest_framework import routers
 
 
@@ -17,4 +18,5 @@ urlpatterns = [
          WalletConfigViewSet.as_view({'get': 'list'})),
     path('wallet-config/get-date/<int:pk>/',
          WalletConfigViewSet.as_view({'get': 'get_date'})),
+    path('user/', UserCreateAPIView.as_view(), name='user-create'),
 ]
