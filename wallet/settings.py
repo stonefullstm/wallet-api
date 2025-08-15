@@ -31,18 +31,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTH_USER_MODEL = 'user.User'
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'rest_framework_simplejwt',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
     'core',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +56,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SERIALIZER_CLASS': 'user.serializers.UserSerializer',
+}
 
 ROOT_URLCONF = 'wallet.urls'
 
