@@ -7,6 +7,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 
 router = routers.DefaultRouter()
@@ -24,8 +29,21 @@ urlpatterns = [
         WalletConfigViewSet.as_view({"get": "get_date"}),
     ),
     path("user/", UserCreateAPIView.as_view(), name="user-create"),
-    path("api/token/", TokenObtainPairView.as_view(),
-         name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(),
-         name="token_refresh"),
+    path(
+         "api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"
+     ),
+    path(
+         "api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
+     ),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
 ]
