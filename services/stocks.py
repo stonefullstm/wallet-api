@@ -33,7 +33,7 @@ def get_b3_stock_codes():
 
     stock_codes = [
         {
-            'sticker': cells[0].text.strip(),
+            'ticker': cells[0].text.strip(),
             'company_name': cells[1].text.strip(),
             'company_full_name': cells[2].text.strip()
         }
