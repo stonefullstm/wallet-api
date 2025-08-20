@@ -5,11 +5,38 @@ from rest_framework.decorators import action
 
 from services.stocks import get_b3_stock_codes
 from .models import Stock, WalletConfig
-from .serializers import StockSerializer, WalletConfigSerializer
+from .serializers import (
+    StockSerializer,
+    WalletConfigSerializer,
+)
 from datetime import date
+import yfinance as yf
 
 
 # Create your views here.
+class HistoryViewSet(APIView):
+
+    def get(self, request, ticker):
+        ticker = ticker + '.SA'
+        stock = yf.Ticker(ticker)
+        history = stock.history(period='1mo', interval='1d')
+        history_array = [
+            {
+                'date': index.strftime('%Y-%m-%d %H:%M:%S'),
+                'open': float(row['Open']),
+                'high': float(row['High']),
+                'low': float(row['Low']),
+                'close': float(row['Close']),
+                'volume': float(row['Volume'])
+            }
+            for index, row in history.iterrows()
+        ]
+        # return Response(HistorySerializer(history.to_dict()).data)
+        return Response({
+                'history': history_array
+            })
+
+
 class StockViewSet(APIView):
 
     def get(self, request):

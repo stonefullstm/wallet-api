@@ -29,7 +29,7 @@ def get_b3_stock_codes():
     table = soup.find('table', {'id': 'test1', 'class': 'resultado'})
 
     if table is None:
-        raise Exception('Stickers table not found.')
+        raise Exception('Tickers table not found.')
 
     stock_codes = [
         {

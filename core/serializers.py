@@ -14,6 +14,15 @@ class StockSerializer(serializers.ModelSerializer):
         return value.upper()
 
 
+class HistorySerializer(serializers.Serializer):
+    date = serializers.DateField()
+    open = serializers.FloatField()
+    high = serializers.FloatField()
+    low = serializers.FloatField()
+    close = serializers.FloatField()
+    volume = serializers.IntegerField()
+
+
 class WalletConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = WalletConfig
