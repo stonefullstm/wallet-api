@@ -20,7 +20,7 @@ class HistorySerializer(serializers.Serializer):
     high = serializers.FloatField()
     low = serializers.FloatField()
     close = serializers.FloatField()
-    volume = serializers.IntegerField()
+    volume = serializers.FloatField()
 
 
 class WalletConfigSerializer(serializers.ModelSerializer):
