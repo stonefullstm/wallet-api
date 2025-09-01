@@ -6,6 +6,7 @@ class Stock(models.Model):
     ticker = models.CharField(max_length=6, unique=True)
     company_name = models.CharField(max_length=100)
     company_full_name = models.CharField(max_length=100)
+    excluded = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.ticker} - {self.company_name}"

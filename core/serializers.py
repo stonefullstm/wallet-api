@@ -23,6 +23,13 @@ class HistorySerializer(serializers.Serializer):
     volume = serializers.FloatField()
 
 
+class MaxMinSerializer(serializers.Serializer):
+    ticker = serializers.CharField()
+    previous_close = serializers.FloatField()
+    actual_close = serializers.FloatField()
+    alta_baixa = serializers.FloatField()
+
+
 class WalletConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = WalletConfig

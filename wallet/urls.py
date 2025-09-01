@@ -23,8 +23,14 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
-        "history/<str:ticker>/<str:start_date>/<str:end_date>/<str:interval>",
-        HistoryViewSet.as_view(), name="history"),
+        "history/get-last-day/",
+        HistoryViewSet.as_view({"get": "get_last_day"}),
+        name="get-last-day"),
+    path(
+        # "history/retrieve/<str:ticker>/<str:start_date>/<str:end_date>/<str:interval>",
+        "history/retrieve/<str:ticker>/",
+        HistoryViewSet.as_view({"get": "retrieve"}), name="history-retrieve"),
+
     path("stocks/", StockViewSet.as_view(), name="stock-list"),
     path("wallet-config/list/", WalletConfigViewSet.as_view({"get": "list"})),
     path(

@@ -15,19 +15,26 @@ import yfinance as yf
 
 
 # Create your views here.
-class HistoryViewSet(APIView):
+class HistoryViewSet(viewsets.ViewSet):
 
-    def get(
+    @action(detail=False, methods=["get"])
+    def retrieve(
         self,
         request,
         ticker,
-        start_date,
-        end_date,
-        interval="1d",
+        # start_date,
+        # end_date,
+        # interval="1d",
+        pk=None
     ):
-        ticker = ticker + ".SA"
+        if ticker[0] != "^":
+            ticker = ticker + ".SA"
         # start_date = datetime.strptime(start_date, "%Y-%m-%d")
         # end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        # ticker = request.GET.get("ticker") + ".SA"
+        start_date = request.GET.get("start_date")
+        end_date = request.GET.get("end_date")
+        interval = request.GET.get("interval", "1d")
         stock = yf.Ticker(ticker)
         history = stock.history(
             start=start_date, end=end_date, interval=interval
@@ -46,6 +53,33 @@ class HistoryViewSet(APIView):
         # return Response(HistorySerializer(history.to_dict()).data)
         return Response(
             {"history": HistorySerializer(history_array, many=True).data})
+
+    @action(detail=False, methods=["get"])
+    def get_last_day(self, request):
+        tickers = StockSerializer(Stock.objects.all(), many=True).data
+        ticker_list = [ticker["ticker"] + ".SA" for ticker in tickers]
+
+        multiple_tickers = yf.download(
+            ticker_list,
+            period="2d",
+            interval="1d",
+            multi_level_index=False,
+            ignore_tz=True,
+            auto_adjust=False,
+        )[['Close']].T.dropna()
+        max_min_list = [
+            {
+                "ticker": index[1].replace(".SA", ""),
+                "previous_close": float(row.iloc[0]),
+                "actual_close": float(row.iloc[1]),
+                "alta_baixa": float(
+                    ((row.iloc[1] - row.iloc[0])
+                        / row.iloc[1]) * 100
+                ),
+            }
+            for index, row in multiple_tickers.iterrows()
+        ]
+        return Response({"max_min": max_min_list})
 
 
 class StockViewSet(APIView):
