@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -19,7 +20,8 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOWED_ORIGINS = ("http://localhost:4200",)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "drf_spectacular",
     "rest_framework",
+    "corsheaders",
     "core",
     "user",
 ]
@@ -56,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 REST_FRAMEWORK = {
@@ -112,20 +116,25 @@ AUTH_PASSWORD_VALIDATORS = [
         ),
     },
     {
-        "NAME": ("django.contrib.auth.password_validation."
-                 "MinimumLengthValidator"),
+        "NAME": (
+            "django.contrib.auth.password_validation." "MinimumLengthValidator"
+            ),
     },
     {
-        "NAME": ("django.contrib.auth.password_validation."
-                 "CommonPasswordValidator"),
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "CommonPasswordValidator"),
     },
     {
-        "NAME": ("django.contrib.auth.password_validation."
-                 "NumericPasswordValidator"),
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "NumericPasswordValidator"),
     },
 ]
 
-
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+}
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 

@@ -1,6 +1,17 @@
 import requests
 from bs4 import BeautifulSoup
 import chardet
+import fundamentus
+
+
+def get_b3_stock_valid():
+    all_tickers = fundamentus.get_resultado()
+    valid_tickers = all_tickers[(all_tickers['pl'] != '0')]
+    valid_tickers = [
+        index
+        for index in valid_tickers.iterrows()
+    ]
+    return valid_tickers
 
 
 def get_b3_stock_codes():
@@ -29,11 +40,12 @@ def get_b3_stock_codes():
     table = soup.find('table', {'id': 'test1', 'class': 'resultado'})
 
     if table is None:
-        raise Exception('Stickers table not found.')
+        raise Exception('Tickers table not found.')
 
+    valid_stock_codes = get_b3_stock_valid()
     stock_codes = [
         {
-            'sticker': cells[0].text.strip(),
+            'ticker': cells[0].text.strip(),
             'company_name': cells[1].text.strip(),
             'company_full_name': cells[2].text.strip()
         }
@@ -41,6 +53,7 @@ def get_b3_stock_codes():
         if (cells := row.find_all('td')) and len(cells) >= 3
         and cells[0].text.strip() and cells[1].text.strip()
         and cells[2].text.strip()
+        and cells[0].text.strip() in valid_stock_codes
     ]
 
     return stock_codes
