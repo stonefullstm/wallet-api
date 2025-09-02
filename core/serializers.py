@@ -28,6 +28,8 @@ class MaxMinSerializer(serializers.Serializer):
     previous_close = serializers.FloatField()
     actual_close = serializers.FloatField()
     alta_baixa = serializers.FloatField()
+    volume = serializers.FloatField()
+    date = serializers.DateField()
 
 
 class WalletConfigSerializer(serializers.ModelSerializer):
