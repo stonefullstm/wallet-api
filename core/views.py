@@ -91,14 +91,12 @@ class HistoryViewSet(viewsets.ViewSet):
                                 ),
                             },
                         )
-                config.stock_date = date.today()
+                config.history_date = date.today()
                 config.save()
             return Response(
-                {
-                    "max_min": MaxMinSerializer(
-                        HistoryStock.objects.all(), many=True
-                    ).data
-                }
+                MaxMinSerializer(
+                    HistoryStock.objects.all(), many=True
+                ).data
             )
         return Response(
             {"error": "No wallet configuration found."}, status=404)
