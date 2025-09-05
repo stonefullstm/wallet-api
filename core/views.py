@@ -52,7 +52,7 @@ class HistoryViewSet(viewsets.ViewSet):
         ]
         # return Response(HistorySerializer(history.to_dict()).data)
         return Response(
-            {"history": HistorySerializer(history_array, many=True).data})
+            HistorySerializer(history_array, many=True).data)
 
     @action(detail=False, methods=["get"])
     def get_last_day(self, request):
