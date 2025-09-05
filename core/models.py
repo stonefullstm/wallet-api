@@ -15,6 +15,19 @@ class Stock(models.Model):
 class WalletConfig(models.Model):
     id = models.PositiveSmallIntegerField(primary_key=True, default=1)
     stock_date = models.DateField()
+    history_date = models.DateField()
 
     def __str__(self):
         return f"WalletConfig for {self.stock_date}"
+
+
+class HistoryStock(models.Model):
+    ticker = models.CharField(max_length=6, unique=True)
+    previous_close = models.FloatField()
+    actual_close = models.FloatField()
+    alta_baixa = models.FloatField()
+    volume = models.FloatField()
+    date = models.DateField()
+
+    def __str__(self):
+        return f"History for {self.ticker} on {self.date}"

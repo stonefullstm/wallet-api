@@ -4,11 +4,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from services.stocks import get_b3_stock_codes
-from .models import Stock, WalletConfig
+from .models import HistoryStock, Stock, WalletConfig
 from .serializers import (
+    MaxMinSerializer,
     StockSerializer,
     WalletConfigSerializer,
-    HistorySerializer
+    HistorySerializer,
 )
 from datetime import date
 import yfinance as yf
@@ -25,7 +26,7 @@ class HistoryViewSet(viewsets.ViewSet):
         # start_date,
         # end_date,
         # interval="1d",
-        pk=None
+        pk=None,
     ):
         if ticker[0] != "^":
             ticker = ticker + ".SA"
@@ -37,8 +38,7 @@ class HistoryViewSet(viewsets.ViewSet):
         interval = request.GET.get("interval", "1d")
         stock = yf.Ticker(ticker)
         history = stock.history(
-            start=start_date, end=end_date, interval=interval
-            )
+            start=start_date, end=end_date, interval=interval)
         history_array = [
             {
                 "date": index.strftime("%Y-%m-%d %H:%M:%S"),
@@ -52,34 +52,54 @@ class HistoryViewSet(viewsets.ViewSet):
         ]
         # return Response(HistorySerializer(history.to_dict()).data)
         return Response(
-            {"history": HistorySerializer(history_array, many=True).data})
+            HistorySerializer(history_array, many=True).data)
 
     @action(detail=False, methods=["get"])
     def get_last_day(self, request):
         tickers = StockSerializer(Stock.objects.all(), many=True).data
         ticker_list = [ticker["ticker"] + ".SA" for ticker in tickers]
-
-        multiple_tickers = yf.download(
-            ticker_list,
-            period="2d",
-            interval="1d",
-            multi_level_index=False,
-            ignore_tz=True,
-            auto_adjust=False,
-        )[['Close']].T.dropna()
-        max_min_list = [
-            {
-                "ticker": index[1].replace(".SA", ""),
-                "previous_close": float(row.iloc[0]),
-                "actual_close": float(row.iloc[1]),
-                "alta_baixa": float(
-                    ((row.iloc[1] - row.iloc[0])
-                        / row.iloc[1]) * 100
-                ),
-            }
-            for index, row in multiple_tickers.iterrows()
-        ]
-        return Response({"max_min": max_min_list})
+        config = WalletConfig.objects.first()
+        if config:
+            if config.history_date != date.today():
+                multiple_tickers = yf.download(
+                    ticker_list,
+                    period="2d",
+                    interval="1d",
+                    multi_level_index=False,
+                    ignore_tz=True,
+                    auto_adjust=False,
+                )[["Close", "Volume"]].T.dropna()
+                for index, row in multiple_tickers.iterrows():
+                    if index[0] == "Close":
+                        HistoryStock.objects.update_or_create(
+                            ticker=index[1].replace(".SA", ""),
+                            defaults={
+                                "previous_close": float(row.iloc[0]),
+                                "actual_close": float(row.iloc[1]),
+                                "alta_baixa": float(
+                                    (
+                                        (row.iloc[1] - row.iloc[0])
+                                        / row.iloc[1]
+                                    ) * 100
+                                ),
+                                "volume": float(
+                                    multiple_tickers.loc[
+                                        ("Volume", index[1])].iloc[1]
+                                ),
+                                "date": multiple_tickers.columns[1].strftime(
+                                    "%Y-%m-%d"
+                                ),
+                            },
+                        )
+                config.history_date = date.today()
+                config.save()
+            return Response(
+                MaxMinSerializer(
+                    HistoryStock.objects.all(), many=True
+                ).data
+            )
+        return Response(
+            {"error": "No wallet configuration found."}, status=404)
 
 
 class StockViewSet(APIView):
